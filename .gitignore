@@ -106,9 +106,11 @@ venv.bak/
 # pickle
 *.pickle
 
+<<<<<<< HEAD
 #.DS_Store
 *.DS_Store
 
 #.idea
 *.idea
+*.csv
 
