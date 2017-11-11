@@ -4,9 +4,9 @@ import pandas as pd
 from collections import Counter
 
 # Referred https://stackoverflow.com/questions/11236006/identify-duplicate-values-in-a-list-in-python to check duplicate
-def checkDuplicate(targetList, printStmt):
+def checkDuplicate(targetList, authorId):
     duplicates = [k for k, v in Counter(targetList).items() if v > 1]
-    assert (len(duplicates) == 0), printStmt
+    assert (len(duplicates) == 0), "Duplicate occurs! AuthorId: %s, PaperIds: %s" % (authorId, duplicates)
 
 
 def getAvgPrecision(predictPapers, solutionPapers):
@@ -53,8 +53,8 @@ if __name__ == '__main__':
         solutionPapers = validSolution['PaperIds'][i].strip().split()
 
         # There are duplicates in predict paepr and solutoin paper.
-        checkDuplicate(predictPapers, "Predict paper %s" % predictAuthorId)
-        checkDuplicate(solutionPapers, "Solution paper %s" % predictAuthorId)
+        #checkDuplicate(predictPapers, predictAuthorId)
+        #checkDuplicate(solutionPapers, predictAuthorId)
 
         assert(getAvgPrecision([7,3,2,4,1,6,5], [7,3]) == getAvgPrecision([7,3,2,4,1,6,5], [3,7]) == 1)
         assert(getAvgPrecision([3,1,4,5,2], [3,5]) == getAvgPrecision([3,1,4,5,2], [5,3]) == 0.75)
