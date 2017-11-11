@@ -57,7 +57,8 @@ if __name__ == '__main__':
         #checkDuplicate(solutionPapers, predictAuthorId)
 
         assert(getAvgPrecision([7,3,2,4,1,6,5], [7,3]) == getAvgPrecision([7,3,2,4,1,6,5], [3,7]) == 1)
-        assert(getAvgPrecision([3,1,4,5,2], [3,5]) == getAvgPrecision([3,1,4,5,2], [5,3]) == 0.75)
+        assert(getAvgPrecision([3,1,4,5,2], [3,5]) == getAvgPrecision([3,1,4,5,2], [5,3]) == 0.75),\
+            "Use Python3 to execute this file"
         meanAvgPrecision += getAvgPrecision(predictPapers, solutionPapers)
 
     meanAvgPrecision /= len(validPredict)
