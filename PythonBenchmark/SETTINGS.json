@@ -1,5 +1,5 @@
 {
-    "model_path": "/Users/harrykim/Documents/Kdd2013AuthorPaperIdentification/PythonBenchmark/basicCoauthorBenchmarkRev2.pickle",
-    "submission_path": "/Users/harrykim/Documents/Kdd2013AuthorPaperIdentification/PythonBenchmark/basicCoauthorBenchmarkRev2.csv",
+    "model_path": "results/basicCoauthorBenchmarkRev2.pickle",
+    "submission_path": "results/basicCoauthorBenchmarkRev2.csv",
     "postgres_conn_string": "host='localhost' dbname='kdd2013authorpaperidentification' user='postgres' password=''"
 }
