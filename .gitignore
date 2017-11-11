@@ -106,3 +106,9 @@ venv.bak/
 # pickle
 *.pickle
 
+#.DS_Store
+*.DS_Store
+
+#.idea
+*.idea
+
