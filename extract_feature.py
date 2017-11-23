@@ -2,6 +2,7 @@ import pickle
 import data_io
 import pandas as pd
 import numpy as np
+from feature_set import *
 
 def read_all_DS():
     dataset = {}
@@ -59,26 +60,6 @@ def get_features(dataset, targetset):
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list
-
-
-def get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs):
-    feature_dict = {}
-
-    pid_to_count = dataset['paper_author']['PaperId'].value_counts()
-    for ap_pair in author_paper_pairs:
-        feature_dict[ap_pair] = pid_to_count[ap_pair[1]]
-
-    return feature_dict
-
-def get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs):
-    feature_dict = {}
-
-    aid_to_count = dataset['paper_author']['AuthorId'].value_counts()
-    for ap_pair in author_paper_pairs:
-        feature_dict[ap_pair] = aid_to_count[ap_pair[0]]
-
-    return feature_dict
-
 
 def main():
     print("Reading csv files")
