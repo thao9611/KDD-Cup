@@ -4,6 +4,7 @@ import data_io
 def main():
     print("Getting features for deleted papers from the database")
     features_deleted = data_io.get_features_db("TrainDeleted")
+    print(features_deleted)
 
     print("Getting features for confirmed papers from the database")
     features_conf = data_io.get_features_db("TrainConfirmed")

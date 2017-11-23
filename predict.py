@@ -13,7 +13,7 @@ def processDuplicates(targetList):
     D = {k: v for k, v in D.items() if len(v) > 1}
 
     deleteTargetIdxs = []
-    for key, items in D.iteritems():
+    for key, items in D.items():
         sortedItems = sorted(items)
         for i in range(len(sortedItems)):
             if (i == 0):
@@ -33,9 +33,7 @@ def main():
     print("Getting features for valid papers from the database")
     data = data_io.get_features_db("ValidPaper")
     '''
-    data = pickle.load(open(data_io.get_paths()["valid_features"]))
-    print(data)
-    print(type(data))
+    data = pickle.load(open(data_io.get_paths()["valid_features"], 'rb'))
     author_paper_ids = [x[:2] for x in data]
     features = [x[2:] for x in data]
 
