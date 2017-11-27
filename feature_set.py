@@ -1,7 +1,7 @@
 # functions should return the following format (dictionary)
 # { (a1, p1): feature_value1, (a2, p2): feature_value2 ... }
 
-def get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs):
+def get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs):
     feature_dict = {}
 
     pid_to_count = dataset['paper_author']['PaperId'].value_counts()
@@ -10,7 +10,7 @@ def get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pai
 
     return feature_dict
 
-def get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs):
+def get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs):
     feature_dict = {}
 
     aid_to_count = dataset['paper_author']['AuthorId'].value_counts()
