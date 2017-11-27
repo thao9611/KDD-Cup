@@ -53,10 +53,10 @@ def get_features(dataset, targetset):
 
     # Keep the format of f# (dictionary): { (a1, p1): feature_value1, (a2, p2): feature_value2 ... }
     # Add your features here and add them to feature_list!
-    f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
-    f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
 
-    feature_list = [f1, f2]
+    feature_list = [harry_f1, harry_f2]
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list

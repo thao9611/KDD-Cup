@@ -52,7 +52,7 @@ if __name__ == '__main__':
         predictPapers = validPredict['PaperIds'][i].strip().split()
         solutionPapers = validSolution['PaperIds'][i].strip().split()
 
-        # There are duplicates in predict paepr and solutoin paper.
+        # There are duplicates in predict paepr and solution paper.
         #checkDuplicate(predictPapers, predictAuthorId)
         #checkDuplicate(solutionPapers, predictAuthorId)
 
