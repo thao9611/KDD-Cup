@@ -1,4 +1,4 @@
-# Based on PythonBenchmark code from offical KDD13 competition.
+# Based on PythonBenchmark code provided offically from KDD13 competition.
 
 import data_io
 import xgboost as xgb
@@ -33,7 +33,7 @@ def main():
     target = np.array(target)
 
     '''
-    classifier = RandomForestClassifier(n_estimators=50, 
+    classifier = RandomForestClassifier(n_estimators=50,
                                         verbose=2,
                                         n_jobs=1,
                                         min_samples_split=10,
@@ -74,6 +74,6 @@ def main():
 
     print("Saving the classifier")
     data_io.save_model(classifier)
-    
+
 if __name__=="__main__":
     main()

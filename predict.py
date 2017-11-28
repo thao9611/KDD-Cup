@@ -1,3 +1,5 @@
+# Based on PythonBenchmark code provided offically from KDD13 competition.
+
 from collections import defaultdict
 import data_io
 import numpy as np

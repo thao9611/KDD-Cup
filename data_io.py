@@ -1,4 +1,4 @@
-# Based on PythonBenchmark code from offical KDD13 competition.
+# Based on PythonBenchmark code provided offically from KDD13 competition.
 
 import csv
 import json
