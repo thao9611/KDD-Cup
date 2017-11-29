@@ -112,3 +112,30 @@ def target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_
         trained_paper= dataset.loc[train_deleted["AuthorId"]== author, "PaperIds"]
         paper_sim[i] = sum(paper_common_word(dataset,i[1],j) for j in trained_paper)
     return paper_sim
+
+
+def paper_year(data,id1, id2):
+    paper = data['paper']
+    paper= paper.set_index("Id")
+    paper['Year'] = paper['Year'].fillna(0)
+    year1 = paper.loc[id1,'Year']
+    year2 = paper.loc[id2, 'Year']
+    if (year1 == 0 | year2 == 0 | year1 == -1 | year2 == -1 ): return 0
+    return 1+ abs(year1 - year2 )
+
+def target_paper_and_confirmed_papers_of_target_author_by_years(dataset, author_paper_pairs):
+    paper_sim = defaultdict(int)
+    trainset = pd.read_csv('dataRev2/Train.csv')
+    train_confirmed= trainset[['AuthorId', 'ConfirmedPaperIds']].rename(columns = {'ConfirmedPaperIds':'PaperIds'})
+    for i in author_paper_pairs:
+        trained_paper= dataset.loc[train_confirmed["AuthorId"]== author, "PaperIds"]
+        total_year = 0
+        num_of_paper = 0
+        for j in trained_paper:
+            a = paper_year(data, i[1],j)
+            if (a > 0):
+                total_year += a
+                num_of_paper += 1
+        if(num_of_paper == 0): paper_sim[i] = 0
+        paper_sim[i] = total_year/num_of_paper
+    return paper_sim

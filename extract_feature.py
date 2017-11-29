@@ -3,6 +3,7 @@ import data_io
 import pandas as pd
 import numpy as np
 from feature_set import *
+from Thao_features import *
 
 def read_all_DS():
     dataset = {}
@@ -53,7 +54,6 @@ def generate_feature_list(author_paper_pairs, ap_to_feature_list):
 
     return result_list
 
-
 def get_features(dataset, targetset):
     author_paper_pairs = parse_targetset(targetset)
 
@@ -73,12 +73,12 @@ def get_features(dataset, targetset):
     thao_f2 = author_paper_affiliation(dataset)
     thao_f3 = target_paper_and_confirmed_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
     thao_f4 = target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
+    thao_f5 = target_paper_and_confirmed_papers_of_target_author_by_years(dataset, author_paper_pairs)
 
     kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
     kamil_list = [kamil_f1]
-    
-    thao_list =[thao_f1, thao_f2,thao_f3,thao_f4]
 
+    thao_list =[thao_f1, thao_f2,thao_f3,thao_f4, thao_f5]
     feature_list = harry_list + kamil_list + thao_list
 
 
