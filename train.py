@@ -21,10 +21,6 @@ def main():
     features_deleted = pickle.load(open(data_io.get_paths()["deleted_features"], 'rb'))
     features_conf = pickle.load(open(data_io.get_paths()["confirmed_features"], 'rb'))
 
-    for i in range(len(features_deleted)):
-        if (len(features_deleted[i]) != 4):
-            print(i)
-
     features = [x[2:] for x in features_deleted + features_conf]
     target = [0 for x in range(len(features_deleted))] + [1 for x in range(len(features_conf))]
 

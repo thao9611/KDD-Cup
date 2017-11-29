@@ -11,6 +11,12 @@ def read_all_DS():
     dataset['conference'] = pd.read_csv('dataRev2/Conference.csv')
     dataset['journal'] = pd.read_csv('dataRev2/Journal.csv')
     dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor.csv')
+
+    merged_info = pd.merge(dataset['paper_author'], dataset['paper'], how='left', left_on='PaperId', right_on='Id')
+    dataset['ac_count'] = merged_info[['AuthorId', 'PaperId','ConferenceId']]\
+        .groupby(['AuthorId', 'ConferenceId']).size().reset_index(name='counts').set_index(['AuthorId', 'ConferenceId'])
+    dataset['aj_count'] = merged_info[['AuthorId', 'PaperId','JournalId']]\
+        .groupby(['AuthorId', 'JournalId']).size().reset_index(name='counts').set_index(['AuthorId', 'JournalId'])
     return dataset
 
 def parse_paper_ids(paper_ids_string):
@@ -55,13 +61,18 @@ def get_features(dataset, targetset):
     # Add your features here and add them to feature_list!
     harry_f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f3 = get_author_publishes_on_how_many_papers_in_conference_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+
+    harry_list = [harry_f1, harry_f2] # Default features
+
+    #harry_list += [harry_f3, harry_f4]
+    feature_list = harry_list
+
     thao_f1 = author_paper_frequency_count(dataset)
     thao_f2 = author_paper_affiliation(dataset)
     thao_f3 = target_paper_and_confirmed_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
     thao_f4 = target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
-
-
-    harry_list = [harry_f1, harry_f2]
 
     kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
     kamil_list = [kamil_f1]
@@ -69,6 +80,7 @@ def get_features(dataset, targetset):
     thao_list =[thao_f1, thao_f2,thao_f3,thao_f4]
 
     feature_list = harry_list + kamil_list + thao_list
+
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list
@@ -82,13 +94,13 @@ def main():
     train_deleted = trainset[['AuthorId', 'DeletedPaperIds']].rename(columns = {'DeletedPaperIds':'PaperIds'})
     validset = pd.read_csv('dataRev2/Valid.csv')
 
-    print("Getting features for deleted papers from the database")
+    print("Getting features for deleted papers")
     features_conf = get_features(dataset, train_confirmed)
 
-    print("Getting features for confirmed papers from the database")
+    print("Getting features for confirmed papers")
     features_deleted = get_features(dataset, train_deleted)
 
-    print("Getting features for valid papers from the database")
+    print("Getting features for valid papers")
     features_valid = get_features(dataset, validset)
 
     pickle.dump(features_deleted, open(data_io.get_paths()["deleted_features"], 'wb'))
