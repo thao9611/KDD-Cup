@@ -1,0 +1,8 @@
+List of extracted features:
+* get_paper_has_how_many_author_in_PaperAuthor: number of author for each paper
+* get_author_publishes_how_many_paper_in_PaperAuthor: number of author for each paper
+* author_paper_count : frequency of a author-paper pair in PaperAuthor.csv
+* author_paper_affiliation: affiliation of author-paper pairs
+* target_paper_and_confirmed_papers_of_target_author_by_keywords: similarities of target author's confirmed paper and target paper based on keywprds
+* target_paper_and_deleted_papers_of_target_author_by_keywords: similarities of target author's deleted paper and target paper based on 
+

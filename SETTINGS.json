@@ -1,0 +1,7 @@
+{
+    "model_path": "./results/basicCoauthorBenchmarkRev2.pickle",
+    "submission_path": "./results/basicCoauthorBenchmarkRev2.csv",
+    "confirmed_features": "./results/deletedFeatures.pickle",
+    "deleted_features": "./results/confirmedFeatures.pickle",
+    "valid_features": "./results/validFeatures.pickle"
+}
