@@ -55,13 +55,19 @@ def get_features(dataset, targetset):
     # Add your features here and add them to feature_list!
     harry_f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
+    thao_f1 = author_paper_frequency_count(dataset)
+    thao_f2 = author_paper_affiliation(dataset)
+    thao_f3 = target_paper_and_confirmed_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
+    thao_f4 = target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
+
 
     harry_list = [harry_f1, harry_f2]
 
     kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
     kamil_list = [kamil_f1]
     
-    thao_list = []
+    thao_list =[thao_f1, thao_f2,thao_f3,thao_f4]
+
     feature_list = harry_list + kamil_list + thao_list
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
