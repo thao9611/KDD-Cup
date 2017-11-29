@@ -57,7 +57,10 @@ def get_features(dataset, targetset):
     harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
 
     harry_list = [harry_f1, harry_f2]
-    kamil_list = []
+
+    kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
+    kamil_list = [kamil_f1]
+    
     thao_list = []
     feature_list = harry_list + kamil_list + thao_list
 
