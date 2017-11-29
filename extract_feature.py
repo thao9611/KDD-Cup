@@ -7,6 +7,7 @@ from Thao_features import *
 
 def read_all_DS():
     dataset = {}
+<<<<<<< HEAD
     dataset['paper'] = pd.read_csv('C:/Users/Admin/Downloads/KDD Cup/dataRev2/Paper.csv')
     dataset['author'] = pd.read_csv('C:/Users/Admin/Downloads/KDD Cup/dataRev2/Author.csv')
     dataset['conference'] = pd.read_csv('C:/Users/Admin/Downloads/KDD Cup/dataRev2/Conference.csv')
@@ -17,6 +18,18 @@ def read_all_DS():
 def parse_paper_ids(paper_ids_string):
     return paper_ids_string.strip().split()
 # return  list of pair of author and his/her paper lists
+=======
+    dataset['paper'] = pd.read_csv('dataRev2/Paper.csv')
+    dataset['author'] = pd.read_csv('dataRev2/Author.csv')
+    dataset['conference'] = pd.read_csv('dataRev2/Conference.csv')
+    dataset['journal'] = pd.read_csv('dataRev2/Journal.csv')
+    dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor.csv')
+    return dataset
+
+def parse_paper_ids(paper_ids_string):
+    return paper_ids_string.strip().split()
+
+>>>>>>> 4d235aa7acb009daf8f9f73eb10980d7ccdce3d1
 def parse_targetset(targetset):
     pair_list = []
     author_id_list = targetset['AuthorId']
@@ -48,6 +61,10 @@ def generate_feature_list(author_paper_pairs, ap_to_feature_list):
 
     return result_list
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4d235aa7acb009daf8f9f73eb10980d7ccdce3d1
 def get_features(dataset, targetset):
     author_paper_pairs = parse_targetset(targetset)
 
@@ -63,8 +80,12 @@ def get_features(dataset, targetset):
 
 
     harry_list = [harry_f1, harry_f2]
-    kamil_list = []
     thao_list = [thao_f1, thao_f2,thao_f3,thao_f4, thao_f5]
+
+    kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
+    kamil_list = [kamil_f1]
+
+    thao_list =[thao_f1, thao_f2,thao_f3,thao_f4, thao_f5]
     feature_list = harry_list + kamil_list + thao_list
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)

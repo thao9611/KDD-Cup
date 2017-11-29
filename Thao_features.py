@@ -113,6 +113,7 @@ def target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_
         paper_sim[i] = sum(paper_common_word(dataset,i[1],j) for j in trained_paper)
     return paper_sim
 
+
 def paper_year(data,id1, id2):
     paper = data['paper']
     paper= paper.set_index("Id")
