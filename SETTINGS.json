@@ -4,5 +4,6 @@
     "confirmed_features": "./results/deletedFeatures.pickle",
     "deleted_features": "./results/confirmedFeatures.pickle",
     "valid_features": "./results/validFeatures.pickle",
+    "test_features": "./results/testFeatures.pickle",
     "paper_title_tokens": "./results/titleTokens.pickle"
 }

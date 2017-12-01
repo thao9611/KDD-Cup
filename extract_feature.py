@@ -73,16 +73,17 @@ def get_features(dataset, targetset):
     # Add your features here and add them to feature_list!
     harry_f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
-    #harry_f3 = get_author_publishes_on_how_many_papers_in_conference_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
-    #harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f3 = get_author_publishes_on_how_many_papers_in_conference_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
 
     harry_list = [harry_f1, harry_f2] # Default features
 
-    #thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
-    thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
-    harry_list += [thao_f3]
+    thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
+    harry_list += [harry_f3, harry_f4, thao_f1]
     feature_list = harry_list
 
+    '''
     start_time = time.time()
     print(start_time)
     kamil_f1 = kamil_feature_11(dataset, author_paper_pairs)
@@ -99,7 +100,7 @@ def get_features(dataset, targetset):
 
     #thao_list =[thao_f1, thao_f3,thao_f4]
     #feature_list = harry_list + kamil_list + thao_list
-
+    '''
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list
@@ -129,6 +130,7 @@ def main():
     pickle.dump(features_deleted, open(data_io.get_paths()["deleted_features"], 'wb'))
     pickle.dump(features_conf, open(data_io.get_paths()["confirmed_features"], 'wb'))
     pickle.dump(features_valid, open(data_io.get_paths()["valid_features"], 'wb'))
+    pickle.dump(features_test, open(data_io.get_paths()["test_features"], 'wb'))
 
 if __name__=="__main__":
     main()

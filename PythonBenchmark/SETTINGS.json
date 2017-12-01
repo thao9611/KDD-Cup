@@ -1,6 +1,7 @@
 {
     "model_path": "results/basicCoauthorBenchmarkRev2.pickle",
-    "submission_path": "results/basicCoauthorBenchmarkRev2.csv",
+    "submission_path_valid": "results/basicCoauthorBenchmarkRev2.csv",
+    "submission_path_test": "results/testSubmssion.csv",
     "postgres_conn_string": "host='localhost' dbname='kdd2013authorpaperidentification' user='postgres' password=''",
     "confirmed_features": "./results/deletedFeatures.pickle",
     "deleted_features": "./results/confirmedFeatures.pickle",
