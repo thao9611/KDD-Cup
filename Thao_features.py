@@ -15,13 +15,10 @@ def author_paper_frequency_count(data,author_paper_pairs):
     author_paper_count = defaultdict(int)
 
     pa['Affiliation'] = pa['Affiliation'].fillna("")
-    pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ['PaperId',"AuthorId"], aggfunc = "count"))
-    author_paper = pa_1.index
+    pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
+
     for i in author_paper_pairs:
-        if (i in author_paper):
-            author_paper_count[i] = pa_1.loc[i,"Affiliation"]
-        else:
-            author_paper_count[i] = 0
+        author_paper_count[i] = pa_1.loc[i, "Affiliation"]
     return author_paper_count
 
 def author_paper_affiliation(data, author_paper_pairs):
@@ -93,23 +90,12 @@ def paper_common_word(data, id1, id2):
     return sim
 
 
-def target_paper_and_confirmed_papers_of_target_author_by_keywords(dataset,author_paper_pairs):
+def target_paper_and_papers_of_target_author_by_keywords(dataset,author_paper_pairs):
     paper_sim = defaultdict(int)
-    trainset = pd.read_csv('dataRev2/Train.csv')
-    train_confirmed= trainset[['AuthorId', 'ConfirmedPaperIds']].rename(columns = {'ConfirmedPaperIds':'PaperIds'})
-
+    trainset = dataset['paper_author']
+   
     for i in author_paper_pairs:
-        trained_paper= train_confirmed.loc[train_confirmed["AuthorId"]== i[0], "PaperIds"]
-        paper_sim[i] = sum(paper_common_word(dataset,i[1],j) for j in trained_paper)
-    return paper_sim
-
-def target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_paper_pairs):
-    paper_sim = defaultdict(int)
-    trainset = pd.read_csv('dataRev2/Train.csv')
-    train_deleted= trainset[['AuthorId', 'DeletedPaperIds']].rename(columns = {'DeletedPaperIds':'PaperIds'})
-
-    for i in author_paper_pairs:
-        trained_paper= train_deleted.loc[train_deleted["AuthorId"]== i[0], "PaperIds"]
+        trained_paper= list(trainset.loc[trainset["AuthorId"]== i[0], "PaperId"])
         paper_sim[i] = sum(paper_common_word(dataset,i[1],j) for j in trained_paper)
     return paper_sim
 
@@ -123,12 +109,11 @@ def paper_year(data,id1, id2):
     if (year1 == 0 | year2 == 0 | year1 == -1 | year2 == -1 ): return 0
     return 1+ abs(year1 - year2 )
 
-def target_paper_and_confirmed_papers_of_target_author_by_years(dataset, author_paper_pairs):
+def target_paper_and_papers_of_target_author_by_years(dataset, author_paper_pairs):
     paper_sim = defaultdict(int)
-    trainset = pd.read_csv('dataRev2/Train.csv')
-    train_confirmed= trainset[['AuthorId', 'ConfirmedPaperIds']].rename(columns = {'ConfirmedPaperIds':'PaperIds'})
+    trainset = dataset['paper_author']
     for i in author_paper_pairs:
-        trained_paper= train_confirmed.loc[train_confirmed["AuthorId"]== i[0], "PaperIds"]
+        trained_paper= trainset.loc[trainset["AuthorId"]== i[0], "PaperId"]
         total_year = 0
         num_of_paper = 0
         for j in trained_paper:
