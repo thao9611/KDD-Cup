@@ -80,7 +80,7 @@ def get_features(dataset, targetset):
 
     thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
     #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
-    harry_list += [harry_f3, harry_f4, thao_f1]
+    #harry_list += [harry_f3, harry_f4, thao_f1]
     feature_list = harry_list
 
     '''

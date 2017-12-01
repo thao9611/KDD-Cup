@@ -30,7 +30,7 @@ def processDuplicates(targetList):
 
     return targetList
 
-def predict_write(data):
+def predict_write(data, predict_type):
     author_paper_ids = [x[:2] for x in data]
     features = [x[2:] for x in data]
 
@@ -54,11 +54,11 @@ def predict_write(data):
         paper_predictions[author_id] = processDuplicates([x[1] for x in paper_ids_sorted])
 
     print("Writing predictions to file")
-    data_io.write_submission(paper_predictions)
+    data_io.write_submission(paper_predictions, predict_type)
 
 def main():
     data = pickle.load(open(data_io.get_paths()["valid_features"], 'rb'))
-    predict_write(data)
+    predict_write(data, "valid")
 
 if __name__=="__main__":
     main()
