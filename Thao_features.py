@@ -5,7 +5,7 @@ import string
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.feature_extraction.text import 
 stopword = set(stopwords.words('english'))
 porter = PorterStemmer()
 
@@ -24,19 +24,37 @@ def author_paper_frequency_count(data,author_paper_pairs):
             author_paper_count[i] = 0
     return author_paper_count
 
-def author_paper_affiliation(data, author_paper_pairs):
+def process_aff(text):
+    for i in string.punctuation: text = text.replace(i,' ')
+    words = word_tokenize(text) #split words
+    words = [w.lower() for w in words if w.isalpha()] #get rid of punctuation
+    words = [w for w in words if w not in list(stopword)]
+    words = [w for w in words if w not in  ["institute","univ",'university',"college","department","science","technology",
+                                            "de","engineer","lab","dept","falcuty",] ]
+    stemmed = [porter.stem(w) for w in words]
+    return stemmed
+def author_affiliation(data):
     pa = data["paper_author"]
-    author_paper_affiliation = defaultdict(str)
-
+    affiliation = defaultdict(str)
+    
     pa['Affiliation'] = pa['Affiliation'].fillna("")
-    pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ['PaperId',"AuthorId"], aggfunc = "sum"))
-    author_paper = pa_1.index
+    pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ["AuthorId"], aggfunc = "sum"))
+    author = list(pa_1.index)
+    for i in author:
+        affiliation[i]= process_aff(pa_1.loc[i,"Affiliation"])
+    return affiliation
+
+# more efficient approach 
+def target_author_and_coauthor_of_target_paper_by_affiliation(dataset,author_paper_pairs):
+    pa = dataset["paper_author"]
+    aff = author_affiliation(dataset)
+    author_sim = defaultdict(int)
+    pa= pa.set_index("PaperId")
     for i in author_paper_pairs:
-        if (i in author_paper):
-            author_paper_affiliation[i] = pa_1.loc[i,"Affiliation"]
-        else:
-            author_paper_affiliation[i] = ""
-    return author_paper_affiliation
+        coauthor= list(pa.loc[i[1], "AuthorId"])
+        author_sim[i] = sum(common_word(aff[i[0]],aff[j]) for j in coauthor)
+    return author_sim
+
 #for keyword of Papers
 def filter_keyword(text):
     for i in string.punctuation: text = text.replace(i,' ')
@@ -73,7 +91,7 @@ def paper_keywords(data):
     count = CountVectorizer(min_df = 5) #only take words with df > 5
     tfidf = TfidfTransformer()
     count_token =count.fit_transform(token).toarray() #2000*527
-    #tfid_token = tfidf.fit_transform(count_token)
+    
     vocab = list(count.vocabulary_.keys())
     #list of common words in each title of each document
     paper['Common word'] = paper['Key_token'].map(lambda x: [i for i in x.split() if i in vocab])
@@ -82,11 +100,8 @@ def paper_keywords(data):
     return paper_keyword
 
 #how similar two documents are based on keywords
-def paper_common_word(data, id1, id2):
-    paper_keyword = paper_keywords(data)
-    sim = 0
-    word1 = paper_keyword[id1]
-    word2 = paper_keyword[id2]
+def common_word(data, word1, word2):
+
     for i in word1:
         if i in word2:
             sim += 1
@@ -96,12 +111,12 @@ def paper_common_word(data, id1, id2):
 def target_paper_and_papers_of_target_author_by_keywords(dataset,author_paper_pairs):
     paper_sim = defaultdict(int)
     trainset = dataset['paper_author']
-   
+    keyword = paper_keywords(dataset)
+    trainset = trainset.set_index("AuthorId")
     for i in author_paper_pairs:
-        trained_paper= list(trainset.loc[trainset["AuthorId"]== i[0], "PaperId"])
-        paper_sim[i] = sum(paper_common_word(dataset,i[1],j) for j in trained_paper)
+        trained_paper= list(trainset.loc[i[0], "PaperId"])
+        paper_sim[i] = sum(common_word(keyword[i[1]],keyword[j]) for j in trained_paper)
     return paper_sim
-
 
 def paper_year(data,id1, id2):
     paper = data['paper']
@@ -115,8 +130,9 @@ def paper_year(data,id1, id2):
 def target_paper_and_papers_of_target_author_by_years(dataset, author_paper_pairs):
     paper_sim = defaultdict(int)
     trainset = dataset['paper_author']
+    trainset  = trainset.set_index("AuthorId")
     for i in author_paper_pairs:
-        trained_paper= trainset.loc[trainset["AuthorId"]== i[0], "PaperId"]
+        trained_paper= trainset.loc[i[0], "PaperId"]
         total_year = 0
         num_of_paper = 0
         for j in trained_paper:
