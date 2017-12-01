@@ -106,6 +106,7 @@ def main():
     train_confirmed = trainset[['AuthorId', 'ConfirmedPaperIds']].rename(columns = {'ConfirmedPaperIds':'PaperIds'})
     train_deleted = trainset[['AuthorId', 'DeletedPaperIds']].rename(columns = {'DeletedPaperIds':'PaperIds'})
     validset = pd.read_csv('dataRev2/Valid.csv')
+    testset = pd.read_csv('dataRev2/Test.csv')
 
     print("Getting features for deleted papers")
     features_conf = get_features(dataset, train_confirmed)
@@ -115,6 +116,9 @@ def main():
 
     print("Getting features for valid papers")
     features_valid = get_features(dataset, validset)
+
+    print("Getting features for test papers")
+    features_test = get_features(dataset, testset)
 
     pickle.dump(features_deleted, open(data_io.get_paths()["deleted_features"], 'wb'))
     pickle.dump(features_conf, open(data_io.get_paths()["confirmed_features"], 'wb'))
