@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 from feature_set import *
 from Thao_features import *
+from kamil_features import *
+import time
 
 def read_all_DS():
     dataset = {}
@@ -74,18 +76,22 @@ def get_features(dataset, targetset):
     #harry_list += [harry_f3, harry_f4]
     #feature_list = harry_list
 
+    start_time = time.time()
+    print(start_time)
+    kamil_f1 = kamil_feature_11(dataset, author_paper_pairs)
+    print(time.time() - start_time)
 
-    kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
     kamil_list = [kamil_f1]
+    feature_list = kamil_list + harry_list
 
-    thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    #thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
     #thao_f2 = author_paper_affiliation(dataset, author_paper_pairs)
-    thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
+    #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
   
-    thao_f4 = target_paper_and_papers_of_target_author_by_years(dataset, author_paper_pairs)
+    #thao_f4 = target_paper_and_papers_of_target_author_by_years(dataset, author_paper_pairs)
 
-    thao_list =[thao_f1, thao_f3,thao_f4]
-    feature_list = harry_list + kamil_list + thao_list
+    #thao_list =[thao_f1, thao_f3,thao_f4]
+    #feature_list = harry_list + kamil_list + thao_list
 
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
@@ -100,10 +106,10 @@ def main():
     train_deleted = trainset[['AuthorId', 'DeletedPaperIds']].rename(columns = {'DeletedPaperIds':'PaperIds'})
     validset = pd.read_csv('dataRev2/Valid.csv')
 
-    print("Getting features for deleted papers")
+    print("Getting features for confirmed papers")
     features_conf = get_features(dataset, train_confirmed)
 
-    print("Getting features for confirmed papers")
+    print("Getting features for deleted papers")
     features_deleted = get_features(dataset, train_deleted)
 
     print("Getting features for valid papers")
