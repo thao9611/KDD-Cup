@@ -14,12 +14,17 @@ def read_all_DS():
     dataset['journal'] = pd.read_csv('dataRev2/Journal.csv')
     dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor.csv')
 
+    dataset['paper_author']['Affiliation'].fillna("")
+
 
     merged_info = pd.merge(dataset['paper_author'], dataset['paper'], how='left', left_on='PaperId', right_on='Id')
     dataset['ac_count'] = merged_info[['AuthorId', 'PaperId','ConferenceId']]\
         .groupby(['AuthorId', 'ConferenceId']).size().reset_index(name='counts').set_index(['AuthorId', 'ConferenceId'])
     dataset['aj_count'] = merged_info[['AuthorId', 'PaperId','JournalId']]\
         .groupby(['AuthorId', 'JournalId']).size().reset_index(name='counts').set_index(['AuthorId', 'JournalId'])
+
+    dataset['ap_duplicate'] = pd.DataFrame(pd.pivot_table(dataset['paper_author'], values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
+
     return dataset
 
 def parse_paper_ids(paper_ids_string):
@@ -66,13 +71,15 @@ def get_features(dataset, targetset):
     # Add your features here and add them to feature_list!
     harry_f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
-    harry_f3 = get_author_publishes_on_how_many_papers_in_conference_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
-    harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    #harry_f3 = get_author_publishes_on_how_many_papers_in_conference_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    #harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
 
     harry_list = [harry_f1, harry_f2] # Default features
 
-    #harry_list += [harry_f3, harry_f4]
-    #feature_list = harry_list
+    #thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
+    harry_list += [thao_f3]
+    feature_list = harry_list
 
 
     kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)

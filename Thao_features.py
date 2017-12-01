@@ -11,11 +11,8 @@ porter = PorterStemmer()
 
 #frequency of a author-paper pair in PaperAuthor.csv
 def author_paper_frequency_count(data,author_paper_pairs):
-    pa = data["paper_author"]
     author_paper_count = defaultdict(int)
-
-    pa['Affiliation'] = pa['Affiliation'].fillna("")
-    pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
+    pa_1 = data['ap_duplicate']
 
     for i in author_paper_pairs:
         author_paper_count[i] = pa_1.loc[i, "Affiliation"]
