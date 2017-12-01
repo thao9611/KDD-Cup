@@ -15,13 +15,10 @@ def author_paper_frequency_count(data,author_paper_pairs):
     author_paper_count = defaultdict(int)
 
     pa['Affiliation'] = pa['Affiliation'].fillna("")
-    pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ['PaperId',"AuthorId"], aggfunc = "count"))
-    author_paper = pa_1.index
+    pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
+
     for i in author_paper_pairs:
-        if (i in author_paper):
-            author_paper_count[i] = pa_1.loc[i,"Affiliation"]
-        else:
-            author_paper_count[i] = 0
+        author_paper_count[i] = pa_1.loc[i, "Affiliation"]
     return author_paper_count
 
 def author_paper_affiliation(data, author_paper_pairs):

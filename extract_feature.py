@@ -12,7 +12,7 @@ def read_all_DS():
     dataset['author'] = pd.read_csv('dataRev2/Author.csv')
     dataset['conference'] = pd.read_csv('dataRev2/Conference.csv')
     dataset['journal'] = pd.read_csv('dataRev2/Journal.csv')
-    dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor1.csv')
+    dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor.csv')
 
 
     merged_info = pd.merge(dataset['paper_author'], dataset['paper'], how='left', left_on='PaperId', right_on='Id')
@@ -71,8 +71,11 @@ def get_features(dataset, targetset):
 
     harry_list = [harry_f1, harry_f2] # Default features
 
-    #harry_list += [harry_f3, harry_f4]
+    thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    harry_list += [harry_f3, harry_f4, thao_f1]
     feature_list = harry_list
+
+    '''
     kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
     kamil_list = [kamil_f1]
 
@@ -84,7 +87,7 @@ def get_features(dataset, targetset):
 
     thao_list =[thao_f1, thao_f2,thao_f3,thao_f4, thao_f5]
     feature_list = harry_list + kamil_list + thao_list
-
+    '''
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list

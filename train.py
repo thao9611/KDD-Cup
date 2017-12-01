@@ -65,8 +65,8 @@ def main():
     classifier = xgb.XGBClassifier(max_depth=8, n_estimators=300, learning_rate=0.05, objective="binary:logistic").fit(features, target)
 
     # plot
-    #xgb.plot_importance(classifier)
-    #pyplot.show()
+    xgb.plot_importance(classifier)
+    pyplot.show()
 
     print("Saving the classifier")
     data_io.save_model(classifier)
