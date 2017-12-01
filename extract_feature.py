@@ -16,7 +16,8 @@ def read_all_DS():
     dataset['journal'] = pd.read_csv('dataRev2/Journal.csv')
     dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor.csv')
 
-    dataset['paper_author']['Affiliation'].fillna("")
+    new_pa = dataset['paper_author'].copy(deep=True)
+    new_pa['Affiliation'] = new_pa['Affiliation'].fillna("")
 
 
     merged_info = pd.merge(dataset['paper_author'], dataset['paper'], how='left', left_on='PaperId', right_on='Id')
@@ -25,7 +26,7 @@ def read_all_DS():
     dataset['aj_count'] = merged_info[['AuthorId', 'PaperId','JournalId']]\
         .groupby(['AuthorId', 'JournalId']).size().reset_index(name='counts').set_index(['AuthorId', 'JournalId'])
 
-    dataset['ap_duplicate'] = pd.DataFrame(pd.pivot_table(dataset['paper_author'], values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
+    dataset['ap_duplicate'] = pd.DataFrame(pd.pivot_table(new_pa, values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
 
     return dataset
 
@@ -80,7 +81,7 @@ def get_features(dataset, targetset):
 
     thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
     #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
-    #harry_list += [harry_f3, harry_f4, thao_f1]
+    harry_list += [harry_f3, harry_f4, thao_f1]
     feature_list = harry_list
 
     '''
