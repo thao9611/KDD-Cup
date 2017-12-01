@@ -7,11 +7,13 @@ from Thao_features import *
 
 def read_all_DS():
     dataset = {}
+
     dataset['paper'] = pd.read_csv('dataRev2/Paper.csv')
     dataset['author'] = pd.read_csv('dataRev2/Author.csv')
     dataset['conference'] = pd.read_csv('dataRev2/Conference.csv')
     dataset['journal'] = pd.read_csv('dataRev2/Journal.csv')
-    dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor.csv')
+    dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor1.csv')
+
 
     merged_info = pd.merge(dataset['paper_author'], dataset['paper'], how='left', left_on='PaperId', right_on='Id')
     dataset['ac_count'] = merged_info[['AuthorId', 'PaperId','ConferenceId']]\
@@ -56,6 +58,9 @@ def generate_feature_list(author_paper_pairs, ap_to_feature_list):
 
 def get_features(dataset, targetset):
     author_paper_pairs = parse_targetset(targetset)
+    harry_list = []
+    thao_list = []
+    kamil_list = []
 
     # Keep the format of f# (dictionary): { (a1, p1): feature_value1, (a2, p2): feature_value2 ... }
     # Add your features here and add them to feature_list!
@@ -68,15 +73,14 @@ def get_features(dataset, targetset):
 
     #harry_list += [harry_f3, harry_f4]
     feature_list = harry_list
-
-    thao_f1 = author_paper_frequency_count(dataset)
-    thao_f2 = author_paper_affiliation(dataset)
-    thao_f3 = target_paper_and_confirmed_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
-    thao_f4 = target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
-    thao_f5 = target_paper_and_confirmed_papers_of_target_author_by_years(dataset, author_paper_pairs)
-
     kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
     kamil_list = [kamil_f1]
+
+    thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    thao_f2 = author_paper_affiliation(dataset, author_paper_pairs)
+    thao_f3 = target_paper_and_confirmed_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
+    thao_f5 = target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
+    thao_f4 = target_paper_and_confirmed_papers_of_target_author_by_years(dataset, author_paper_pairs)
 
     thao_list =[thao_f1, thao_f2,thao_f3,thao_f4, thao_f5]
     feature_list = harry_list + kamil_list + thao_list

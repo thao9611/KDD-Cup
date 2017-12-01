@@ -10,7 +10,7 @@ stopword = set(stopwords.words('english'))
 porter = PorterStemmer()
 
 #frequency of a author-paper pair in PaperAuthor.csv
-def author_paper_count(data,author_paper_pairs):
+def author_paper_frequency_count(data,author_paper_pairs):
     pa = data["paper_author"]
     author_paper_count = defaultdict(int)
 
@@ -48,7 +48,7 @@ def filter_keyword(text):
 
 # for title of papers
 def tokenize(text):
-    words = word_tokenize(text) #split words
+    words = word_tokenize(text.decode("utf8")) #split words
     words = [w.lower() for w in words if w.isalpha()] #get rid of punctuation
     words =[w for w in words if  not w in stopword]
     stemmed = [porter.stem(w) for w in words]
@@ -99,17 +99,17 @@ def target_paper_and_confirmed_papers_of_target_author_by_keywords(dataset,autho
     train_confirmed= trainset[['AuthorId', 'ConfirmedPaperIds']].rename(columns = {'ConfirmedPaperIds':'PaperIds'})
 
     for i in author_paper_pairs:
-        trained_paper= dataset.loc[train_confirmed["AuthorId"]== author, "PaperIds"]
+        trained_paper= train_confirmed.loc[train_confirmed["AuthorId"]== i[0], "PaperIds"]
         paper_sim[i] = sum(paper_common_word(dataset,i[1],j) for j in trained_paper)
     return paper_sim
 
 def target_paper_and_deleted_papers_of_target_author_by_keywords(dataset,author_paper_pairs):
     paper_sim = defaultdict(int)
     trainset = pd.read_csv('dataRev2/Train.csv')
-    train_deleted= trainset[['AuthorId', 'DeletedPaperIds']].rename(columns = {"DeletedPaperIds':'PaperIds'})
+    train_deleted= trainset[['AuthorId', 'DeletedPaperIds']].rename(columns = {'DeletedPaperIds':'PaperIds'})
 
     for i in author_paper_pairs:
-        trained_paper= dataset.loc[train_deleted["AuthorId"]== author, "PaperIds"]
+        trained_paper= train_deleted.loc[train_deleted["AuthorId"]== i[0], "PaperIds"]
         paper_sim[i] = sum(paper_common_word(dataset,i[1],j) for j in trained_paper)
     return paper_sim
 
@@ -128,11 +128,11 @@ def target_paper_and_confirmed_papers_of_target_author_by_years(dataset, author_
     trainset = pd.read_csv('dataRev2/Train.csv')
     train_confirmed= trainset[['AuthorId', 'ConfirmedPaperIds']].rename(columns = {'ConfirmedPaperIds':'PaperIds'})
     for i in author_paper_pairs:
-        trained_paper= dataset.loc[train_confirmed["AuthorId"]== author, "PaperIds"]
+        trained_paper= train_confirmed.loc[train_confirmed["AuthorId"]== i[0], "PaperIds"]
         total_year = 0
         num_of_paper = 0
         for j in trained_paper:
-            a = paper_year(data, i[1],j)
+            a = paper_year(dataset, i[1],j)
             if (a > 0):
                 total_year += a
                 num_of_paper += 1
