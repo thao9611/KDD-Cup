@@ -5,6 +5,9 @@ import string
 import pickle
 import data_io
 import time
+import nltk
+nltk.download('stopwords')
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
