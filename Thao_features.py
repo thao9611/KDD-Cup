@@ -52,7 +52,7 @@ def tokenize(text):
 
 #return the keywords of each paper
 def paper_keywords(data):
-    paper = data['paper'].copy(deep=True)
+    paper = data['paper']
     paperid = list(paper["Id"])
     paper_keyword = defaultdict(list)
 
