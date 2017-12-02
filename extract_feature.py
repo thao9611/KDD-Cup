@@ -27,6 +27,8 @@ def read_all_DS():
         .groupby(['AuthorId', 'JournalId']).size().reset_index(name='counts').set_index(['AuthorId', 'JournalId'])
 
     dataset['ap_duplicate'] = pd.DataFrame(pd.pivot_table(new_pa, values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
+    dataset['pa_duplicate'] = pd.DataFrame(
+        pd.pivot_table(new_pa, values="Affiliation", index=['PaperId', "AuthorId"], aggfunc="count"))
 
     return dataset
 
@@ -76,12 +78,14 @@ def get_features(dataset, targetset):
     harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f3 = get_author_publishes_on_how_many_papers_in_conference_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f5 = get_how_many_duplicated_coauthors_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f6 = get_how_many_duplicated_papers_of_target_author_in_targetsets(dataset, author_paper_pairs)
 
     harry_list = [harry_f1, harry_f2] # Default features
 
     thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
     #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
-    harry_list += [harry_f3, harry_f4, thao_f1]
+    harry_list += [harry_f3, harry_f4, thao_f1, harry_f5, harry_f6]
     feature_list = harry_list
 
     '''
@@ -115,6 +119,10 @@ def main():
     train_deleted = trainset[['AuthorId', 'DeletedPaperIds']].rename(columns = {'DeletedPaperIds':'PaperIds'})
     validset = pd.read_csv('dataRev2/Valid.csv')
     testset = pd.read_csv('dataRev2/Test.csv')
+
+    allsets = pd.concat([train_confirmed, validset, testset])
+    all_dups = make_duplicates_from_targets(allsets)
+    dataset['all_duplicates'] = all_dups
 
     print("Getting features for confirmed papers")
     features_conf = get_features(dataset, train_confirmed)
