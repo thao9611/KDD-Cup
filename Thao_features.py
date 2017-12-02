@@ -14,10 +14,10 @@ porter = PorterStemmer()
 #frequency of a author-paper pair in PaperAuthor.csv
 def author_paper_frequency_count(dataset, author_paper_pairs):
     author_paper_count = defaultdict(int)
-    pa_1 = dataset['ap_duplicate']
+    ap_1 = dataset['ap_duplicate']
 
     for i in author_paper_pairs:
-        author_paper_count[i] = pa_1.loc[i, "Affiliation"]
+        author_paper_count[i] = ap_1.loc[i, "Affiliation"]
     return author_paper_count
 
 def author_paper_affiliation(data, author_paper_pairs):
