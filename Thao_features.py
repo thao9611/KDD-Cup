@@ -11,7 +11,7 @@ nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
-from sklearn.feature_extraction.text import 
+from sklearn.feature_extraction.text import
 stopword = set(stopwords.words('english'))
 porter = PorterStemmer()
 
@@ -36,7 +36,7 @@ def process_aff(text):
 def author_affiliation(data):
     pa = data["paper_author"]
     affiliation = defaultdict(str)
-    
+
     pa['Affiliation'] = pa['Affiliation'].fillna("")
     pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ["AuthorId"], aggfunc = "sum"))
     author = list(pa_1.index)
@@ -44,7 +44,7 @@ def author_affiliation(data):
         affiliation[i]= process_aff(pa_1.loc[i,"Affiliation"])
     return affiliation
 
-# more efficient approach 
+# more efficient approach
 def target_author_and_coauthor_of_target_paper_by_affiliation(dataset,author_paper_pairs):
     pa = dataset["paper_author"]
     aff = author_affiliation(dataset)
@@ -79,6 +79,7 @@ def paper_keywords(data):
     paper_keyword = defaultdict(list)
 
     paper= paper.set_index("Id")
+
     paper['Keyword']= paper['Keyword'].fillna("")
     paper['Title']= paper['Title'].fillna("")
 
@@ -115,22 +116,17 @@ def paper_keywords(data):
     print("Start concatenation!!!")
 
     #TODO: change all "apply", "map" functions to explicit for loop. Don't use "for loop" in the list because it causes memory limit error.
-
     #concatenate keyword and token
-    paper['Key_token'] = paper[['Keyword_pro','Token']].apply((lambda x: ' '.join(list(set([i for z in x for i in z])))), axis =1)
-    token = list(paper['Key_token'])
-    count = CountVectorizer(min_df = 5) #only take words with df > 5
-    tfidf = TfidfTransformer()
-    count_token =count.fit_transform(token).toarray() #2000*527
-    
-    vocab = list(count.vocabulary_.keys())
-    #list of common words in each title of each document
-    paper['Common word'] = paper['Key_token'].map(lambda x: [i for i in x.split() if i in vocab])
+    keyToken = []
     for i in paperid:
-        paper_keyword[i] = paper.loc[i,'Common word']
+        keyToken.append(list(set(paper.loc[i, 'Keyword_pro'] + paper.loc[i, 'Token'])))
+    paper['Key_token'] = keyToken
+    for i in paperid:
+        paper_keyword[i] = paper.loc[i,'Key_token']
 
     pickle.dump(paper_keyword, open(data_io.get_paths()["paper_title_tokens"], 'wb'))
     return paper_keyword
+
 
 #how similar two documents are based on keywords
 
@@ -139,14 +135,14 @@ def paper_common_word(tokens, id1, id2):
     sim = 0
     word1 = paper_keyword[id1]
     word2 = paper_keyword[id2]
-    
+
 
 def common_word(word1, word2):
     for i in word1:
         if i in word2:
             sim += 1
     return sim
-    
+
 def target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs):
     paper_sim = defaultdict(int)
     trainset = dataset['paper_author']
@@ -155,7 +151,7 @@ def target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_p
     trainset = trainset.set_index('AuthorId')
 
     tokens = pickle.load(open(data_io.get_paths()["paper_title_tokens"], 'rb'))
-   
+
     for ap in author_paper_pairs:
         target_author_papers= list(trainset.loc[ap[0], "PaperId"])
         paper_sim[ap] = sum(paper_common_word(tokens, ap[1], pid) for pid in target_author_papers)
