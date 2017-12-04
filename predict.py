@@ -30,12 +30,7 @@ def processDuplicates(targetList):
 
     return targetList
 
-def main():
-    '''
-    print("Getting features for valid papers from the database")
-    data = data_io.get_features_db("ValidPaper")
-    '''
-    data = pickle.load(open(data_io.get_paths()["valid_features"], 'rb'))
+def predict_write(data):
     author_paper_ids = [x[:2] for x in data]
     features = [x[2:] for x in data]
 
@@ -44,8 +39,8 @@ def main():
 
     print("Making predictions")
 
-    features = np.array(features) # This line is for xgboost
-    predictions = classifier.predict_proba(features)[:,1]
+    features = np.array(features)  # This line is for xgboost
+    predictions = classifier.predict_proba(features)[:, 1]
     predictions = list(predictions)
 
     author_predictions = defaultdict(list)
@@ -60,6 +55,10 @@ def main():
 
     print("Writing predictions to file")
     data_io.write_submission(paper_predictions)
+
+def main():
+    data = pickle.load(open(data_io.get_paths()["valid_features"], 'rb'))
+    predict_write(data)
 
 if __name__=="__main__":
     main()

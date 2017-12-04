@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 from feature_set import *
 from Thao_features import *
+from kamil_features import *
+import time
 
 def read_all_DS():
     dataset = {}
@@ -12,7 +14,9 @@ def read_all_DS():
     dataset['author'] = pd.read_csv('dataRev2/Author.csv')
     dataset['conference'] = pd.read_csv('dataRev2/Conference.csv')
     dataset['journal'] = pd.read_csv('dataRev2/Journal.csv')
-    dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor1.csv')
+    dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor.csv')
+
+    dataset['paper_author']['Affiliation'].fillna("")
 
 
     merged_info = pd.merge(dataset['paper_author'], dataset['paper'], how='left', left_on='PaperId', right_on='Id')
@@ -20,6 +24,9 @@ def read_all_DS():
         .groupby(['AuthorId', 'ConferenceId']).size().reset_index(name='counts').set_index(['AuthorId', 'ConferenceId'])
     dataset['aj_count'] = merged_info[['AuthorId', 'PaperId','JournalId']]\
         .groupby(['AuthorId', 'JournalId']).size().reset_index(name='counts').set_index(['AuthorId', 'JournalId'])
+
+    dataset['ap_duplicate'] = pd.DataFrame(pd.pivot_table(dataset['paper_author'], values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
+
     return dataset
 
 def parse_paper_ids(paper_ids_string):
@@ -71,20 +78,29 @@ def get_features(dataset, targetset):
 
     harry_list = [harry_f1, harry_f2] # Default features
 
-    #harry_list += [harry_f3, harry_f4]
-    feature_list = harry_list
-    kamil_f1 = kamil_new_f1(dataset, author_paper_pairs)
-    kamil_list = [kamil_f1]
-
     thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
+    harry_list += [harry_f3, harry_f4, thao_f1]
+    feature_list = harry_list
+
+    '''
+    start_time = time.time()
+    print(start_time)
+    kamil_f1 = kamil_feature_11(dataset, author_paper_pairs)
+    print(time.time() - start_time)
+
+    kamil_list = [kamil_f1]
+    feature_list = kamil_list + harry_list
+
+    #thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
     #thao_f2 = author_paper_affiliation(dataset, author_paper_pairs)
-    thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
+    #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
   
-    thao_f4 = target_paper_and_papers_of_target_author_by_years(dataset, author_paper_pairs)
+    #thao_f4 = target_paper_and_papers_of_target_author_by_years(dataset, author_paper_pairs)
 
-    thao_list =[thao_f1, thao_f3,thao_f4]
-    feature_list = harry_list + kamil_list + thao_list
-
+    #thao_list =[thao_f1, thao_f3,thao_f4]
+    #feature_list = harry_list + kamil_list + thao_list
+    '''
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list
@@ -97,19 +113,24 @@ def main():
     train_confirmed = trainset[['AuthorId', 'ConfirmedPaperIds']].rename(columns = {'ConfirmedPaperIds':'PaperIds'})
     train_deleted = trainset[['AuthorId', 'DeletedPaperIds']].rename(columns = {'DeletedPaperIds':'PaperIds'})
     validset = pd.read_csv('dataRev2/Valid.csv')
-
-    print("Getting features for deleted papers")
-    features_conf = get_features(dataset, train_confirmed)
+    testset = pd.read_csv('dataRev2/Test.csv')
 
     print("Getting features for confirmed papers")
+    features_conf = get_features(dataset, train_confirmed)
+
+    print("Getting features for deleted papers")
     features_deleted = get_features(dataset, train_deleted)
 
     print("Getting features for valid papers")
     features_valid = get_features(dataset, validset)
 
+    print("Getting features for test papers")
+    features_test = get_features(dataset, testset)
+
     pickle.dump(features_deleted, open(data_io.get_paths()["deleted_features"], 'wb'))
     pickle.dump(features_conf, open(data_io.get_paths()["confirmed_features"], 'wb'))
     pickle.dump(features_valid, open(data_io.get_paths()["valid_features"], 'wb'))
+    pickle.dump(features_test, open(data_io.get_paths()["test_features"], 'wb'))
 
 if __name__=="__main__":
     main()

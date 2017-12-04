@@ -2,6 +2,8 @@ from collections import defaultdict
 import pandas as pd
 import numpy
 import string
+import pickle
+import data_io
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
@@ -10,18 +12,12 @@ stopword = set(stopwords.words('english'))
 porter = PorterStemmer()
 
 #frequency of a author-paper pair in PaperAuthor.csv
-def author_paper_frequency_count(data,author_paper_pairs):
-    pa = data["paper_author"]
+def author_paper_frequency_count(dataset, author_paper_pairs):
     author_paper_count = defaultdict(int)
+    pa_1 = dataset['ap_duplicate']
 
-    pa['Affiliation'] = pa['Affiliation'].fillna("")
-    pa_1 = pd.DataFrame(pd.pivot_table(pa, values = "Affiliation",index = ['PaperId',"AuthorId"], aggfunc = "count"))
-    author_paper = pa_1.index
     for i in author_paper_pairs:
-        if (i in author_paper):
-            author_paper_count[i] = pa_1.loc[i,"Affiliation"]
-        else:
-            author_paper_count[i] = 0
+        author_paper_count[i] = pa_1.loc[i, "Affiliation"]
     return author_paper_count
 
 def process_aff(text):
@@ -66,7 +62,7 @@ def filter_keyword(text):
 
 # for title of papers
 def tokenize(text):
-    words = word_tokenize(text.decode("utf8")) #split words
+    words = word_tokenize(text) #split words
     words = [w.lower() for w in words if w.isalpha()] #get rid of punctuation
     words =[w for w in words if  not w in stopword]
     stemmed = [porter.stem(w) for w in words]
@@ -97,25 +93,37 @@ def paper_keywords(data):
     paper['Common word'] = paper['Key_token'].map(lambda x: [i for i in x.split() if i in vocab])
     for i in paperid:
         paper_keyword[i] = paper.loc[i,'Common word']
+
+    pickle.dump(paper_keyword, open(data_io.get_paths()["paper_title_tokens"], 'wb'))
     return paper_keyword
 
 #how similar two documents are based on keywords
-def common_word(data, word1, word2):
 
+def paper_common_word(tokens, id1, id2):
+    paper_keyword = tokens
+    sim = 0
+    word1 = paper_keyword[id1]
+    word2 = paper_keyword[id2]
+    
+
+def common_word(word1, word2):
     for i in word1:
         if i in word2:
             sim += 1
     return sim
-
-
-def target_paper_and_papers_of_target_author_by_keywords(dataset,author_paper_pairs):
+    
+def target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs):
     paper_sim = defaultdict(int)
     trainset = dataset['paper_author']
-    keyword = paper_keywords(dataset)
-    trainset = trainset.set_index("AuthorId")
-    for i in author_paper_pairs:
-        trained_paper= list(trainset.loc[i[0], "PaperId"])
-        paper_sim[i] = sum(common_word(keyword[i[1]],keyword[j]) for j in trained_paper)
+
+
+    trainset = trainset.set_index('AuthorId')
+
+    tokens = pickle.load(open(data_io.get_paths()["paper_title_tokens"], 'rb'))
+   
+    for ap in author_paper_pairs:
+        target_author_papers= list(trainset.loc[ap[0], "PaperId"])
+        paper_sim[ap] = sum(paper_common_word(tokens, ap[1], pid) for pid in target_author_papers)
     return paper_sim
 
 def paper_year(data,id1, id2):
