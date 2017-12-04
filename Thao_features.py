@@ -4,6 +4,10 @@ import numpy
 import string
 import pickle
 import data_io
+import time
+import nltk
+nltk.download('stopwords')
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
@@ -14,10 +18,10 @@ porter = PorterStemmer()
 #frequency of a author-paper pair in PaperAuthor.csv
 def author_paper_frequency_count(dataset, author_paper_pairs):
     author_paper_count = defaultdict(int)
-    pa_1 = dataset['ap_duplicate']
+    ap_1 = dataset['ap_duplicate']
 
     for i in author_paper_pairs:
-        author_paper_count[i] = pa_1.loc[i, "Affiliation"]
+        author_paper_count[i] = ap_1.loc[i, "Affiliation"]
     return author_paper_count
 
 def process_aff(text):
@@ -77,9 +81,40 @@ def paper_keywords(data):
     paper= paper.set_index("Id")
     paper['Keyword']= paper['Keyword'].fillna("")
     paper['Title']= paper['Title'].fillna("")
+
     title = list(paper["Title"])
-    paper['Token'] = paper.Title.map(tokenize)
-    paper['Keyword_pro'] = paper['Keyword'].map(filter_keyword)
+    cnt = 0
+    start_time = time.time()
+    titleTokens = []
+
+    print("Start title!!!")
+    for t in title:
+        cnt += 1
+        if (cnt % 100000 == 0):
+            print("Count: ", cnt)
+            print("Time: ", time.time() - start_time)
+        titleTokens.append(tokenize(t))
+    paper['Token'] = titleTokens
+
+
+    #paper['Token'] = paper.Title.map(tokenize)
+    print ("Start keyword!!!")
+
+    keywords = list(paper['Keyword'])
+    cnt2 = 0
+    keywordTokens = []
+    for k in keywords:
+        cnt2 += 1
+        if (cnt2 % 100000 == 0):
+            print("Count: ", cnt)
+            print("Time: ", time.time() - start_time)
+        keywordTokens.append(filter_keyword(k))
+
+    paper['Keyword_pro'] = keywordTokens
+
+    print("Start concatenation!!!")
+
+    #TODO: change all "apply", "map" functions to explicit for loop. Don't use "for loop" in the list because it causes memory limit error.
 
     #concatenate keyword and token
     paper['Key_token'] = paper[['Keyword_pro','Token']].apply((lambda x: ' '.join(list(set([i for z in x for i in z])))), axis =1)
