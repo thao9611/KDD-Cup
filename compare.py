@@ -6,6 +6,9 @@ from collections import Counter
 # Referred https://stackoverflow.com/questions/11236006/identify-duplicate-values-in-a-list-in-python to check duplicate
 def checkDuplicate(targetList, authorId):
     duplicates = [k for k, v in Counter(targetList).items() if v > 1]
+
+    #if ((len(duplicates) > 0)):
+    #    print ("Duplicate occurs! AuthorId: %s, PaperIds: %s" % (authorId, duplicates))
     assert (len(duplicates) == 0), "Duplicate occurs! AuthorId: %s, PaperIds: %s" % (authorId, duplicates)
 
 

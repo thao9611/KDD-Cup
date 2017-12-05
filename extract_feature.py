@@ -92,21 +92,22 @@ def get_features(dataset, targetset):
     # Add your features here and add them to feature_list!
     harry_f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
+
+    harry_list = [harry_f1, harry_f2] # Default features
+
+
     harry_f3 = get_author_publishes_on_how_many_papers_in_conference_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f5 = get_how_many_duplicated_coauthors_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f6 = get_how_many_duplicated_papers_of_target_author_in_targetsets(dataset, author_paper_pairs)
     thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
-    #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
-
-    #harry_f7 = compare_author_name_from_profile(dataset, author_paper_pairs)
-    #harry_f8 = compare_author_affiliation_from_profile(dataset, author_paper_pairs)
-
-    harry_list = [harry_f1, harry_f2] # Default features
-
-
+    # thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
     harry_list += [harry_f3, harry_f4, thao_f1, harry_f5, harry_f6] # 97.06% accuracy
-    #harry_list += [harry_f7, harry_f8]
+
+
+    harry_f7 = compare_author_name_from_profile(dataset, author_paper_pairs)
+    harry_f8 = compare_author_affiliation_from_profile(dataset, author_paper_pairs)
+    harry_list += [harry_f7, harry_f8]
     feature_list = harry_list
 
     '''
@@ -145,6 +146,7 @@ def main():
     all_dups = make_duplicates_from_targets(allsets)
     dataset['all_duplicates'] = all_dups
 
+
     print("Getting features for confirmed papers")
     features_conf = get_features(dataset, train_confirmed)
 
@@ -158,9 +160,10 @@ def main():
     pickle.dump(features_conf, open(data_io.get_paths()["confirmed_features"], 'wb'))
     pickle.dump(features_valid, open(data_io.get_paths()["valid_features"], 'wb'))
 
-    #print("Getting features for test papers")
-    #features_test = get_features(dataset, testset)
-    #pickle.dump(features_test, open(data_io.get_paths()["test_features"], 'wb'))
+
+    print("Getting features for test papers")
+    features_test = get_features(dataset, testset)
+    pickle.dump(features_test, open(data_io.get_paths()["test_features"], 'wb'))
 
 if __name__=="__main__":
     main()

@@ -39,22 +39,22 @@ def main():
 
     #Referred https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/ for parameter tuning
 
-    '''
+
     param_test1 = {
-        'max_depth': range(3, 10, 1),
-        'min_child_weight': range(1, 6, 1)
+        'max_depth': list(range(3, 10, 1)),
+        'min_child_weight': list(range(1, 6, 1))
     }
     gsearch1 = GridSearchCV(estimator=xgb.XGBClassifier(learning_rate=0.1, n_estimators=140, max_depth=5,
                                                     min_child_weight=1, gamma=0, subsample=0.8, colsample_bytree=0.8,
                                                     objective='binary:logistic', nthread=4, scale_pos_weight=1,
-                                                    seed=27),
-                            param_grid=param_test1, scoring='roc_auc', n_jobs=4, iid=False, cv=5)
+                                                    seed=27), param_grid=param_test1, scoring='roc_auc', n_jobs=4, iid=False, cv=5)
     gsearch1.fit(features, target)
     print(gsearch1.grid_scores_)
     print(gsearch1.best_params_)
     print(gsearch1.best_score_)
     exit()
-    '''
+
+
 
     '''
     classifier = xgb.XGBClassifier(learning_rate=0.1, n_estimators=140, max_depth=7,
@@ -62,11 +62,12 @@ def main():
                                                     objective='binary:logistic', nthread=4, scale_pos_weight=1,
                                                     seed=27).fit(features, target)
     '''
-    classifier = xgb.XGBClassifier(max_depth=8, n_estimators=300, learning_rate=0.05, objective="binary:logistic").fit(features, target)
+
+    #classifier = xgb.XGBClassifier(max_depth=8, n_estimators=300, learning_rate=0.05, objective="binary:logistic").fit(features, target)
 
     # plot
-    xgb.plot_importance(classifier)
-    pyplot.show()
+    #xgb.plot_importance(classifier)
+    #pyplot.show()
 
     print("Saving the classifier")
     data_io.save_model(classifier)
