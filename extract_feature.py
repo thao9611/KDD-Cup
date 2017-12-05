@@ -12,7 +12,6 @@ import unidecode
 # https://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-in-a-python-unicode-string
 def read_all_DS():
     dataset = {}
-
     dataset['paper'] = pd.read_csv('dataRev2/Paper.csv')
     dataset['author'] = pd.read_csv('dataRev2/Author.csv')
     dataset['conference'] = pd.read_csv('dataRev2/Conference.csv')
@@ -45,6 +44,14 @@ def read_all_DS():
         pd.pivot_table(new_pa, values="Affiliation", index=['PaperId', "AuthorId"], aggfunc="count")).sort_index()
 
     dataset['ap_indexed'] = new_pa.set_index(['AuthorId','PaperId']).sort_index()
+
+    '''
+    start_time = time.time()
+    pickle.dump(dataset, open("results/dataset.pickle", 'wb'))
+    print("dump: ", time.time() - start_time)
+    dataset = pickle.load(open("results/dataset.pickle", 'rb'))
+    print ("dataset load done!")
+    '''
 
     return dataset
 
@@ -90,6 +97,7 @@ def get_features(dataset, targetset):
 
     # Keep the format of f# (dictionary): { (a1, p1): feature_value1, (a2, p2): feature_value2 ... }
     # Add your features here and add them to feature_list!
+
     harry_f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
 
@@ -160,10 +168,11 @@ def main():
     pickle.dump(features_conf, open(data_io.get_paths()["confirmed_features"], 'wb'))
     pickle.dump(features_valid, open(data_io.get_paths()["valid_features"], 'wb'))
 
-
+    '''
     print("Getting features for test papers")
     features_test = get_features(dataset, testset)
     pickle.dump(features_test, open(data_io.get_paths()["test_features"], 'wb'))
+    '''
 
 if __name__=="__main__":
     main()

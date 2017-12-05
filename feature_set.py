@@ -70,6 +70,7 @@ def get_how_many_duplicated_coauthors_of_target_paper_in_PaperAuthor(dataset, au
     #pa = ap.swaplevel()
     pa = dataset['pa_duplicate']
 
+    # This feature takes too much time because of lengthy boolean array generation.
     for ap_pair in author_paper_pairs:
         aid = ap_pair[0]
         pid = ap_pair[1]
