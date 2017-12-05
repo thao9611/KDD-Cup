@@ -6,7 +6,10 @@ from feature_set import *
 from Thao_features import *
 from kamil_features import *
 import time
+import unidecode
 
+# Referred below for latin character to english character
+# https://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-in-a-python-unicode-string
 def read_all_DS():
     dataset = {}
 
@@ -15,20 +18,33 @@ def read_all_DS():
     dataset['conference'] = pd.read_csv('dataRev2/Conference.csv')
     dataset['journal'] = pd.read_csv('dataRev2/Journal.csv')
     dataset['paper_author'] = pd.read_csv('dataRev2/PaperAuthor.csv')
+    #dataset['tokens'] = pickle.load(open(data_io.get_paths()["paper_title_tokens"], 'rb'))
 
-    new_pa = dataset['paper_author'].copy(deep=True)
-    new_pa['Affiliation'] = new_pa['Affiliation'].fillna("")
+    dataset['author']['Name'].fillna("", inplace=True)
+    dataset['author']['Name'] = dataset['author']['Name'].str.lower().apply(unidecode.unidecode)
+
+    dataset['author']['Affiliation'].fillna("", inplace=True)
+    dataset['author']['Affiliation'] = dataset['author']['Affiliation'].str.lower().apply(unidecode.unidecode)
+
+    new_pa = dataset['paper_author']
+    new_pa['Name'].fillna("", inplace=True)
+    new_pa['Name'] = new_pa['Name'].str.lower().apply(unidecode.unidecode)
+
+    new_pa['Affiliation'].fillna("", inplace=True)
+    new_pa['Affiliation'] = new_pa['Affiliation'].str.lower().apply(unidecode.unidecode)
 
 
     merged_info = pd.merge(dataset['paper_author'], dataset['paper'], how='left', left_on='PaperId', right_on='Id')
     dataset['ac_count'] = merged_info[['AuthorId', 'PaperId','ConferenceId']]\
-        .groupby(['AuthorId', 'ConferenceId']).size().reset_index(name='counts').set_index(['AuthorId', 'ConferenceId'])
+        .groupby(['AuthorId', 'ConferenceId']).size().reset_index(name='counts').set_index(['AuthorId', 'ConferenceId']).sort_index()
     dataset['aj_count'] = merged_info[['AuthorId', 'PaperId','JournalId']]\
-        .groupby(['AuthorId', 'JournalId']).size().reset_index(name='counts').set_index(['AuthorId', 'JournalId'])
+        .groupby(['AuthorId', 'JournalId']).size().reset_index(name='counts').set_index(['AuthorId', 'JournalId']).sort_index()
 
-    dataset['ap_duplicate'] = pd.DataFrame(pd.pivot_table(new_pa, values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count"))
+    dataset['ap_duplicate'] = pd.DataFrame(pd.pivot_table(new_pa, values = "Affiliation",index = ['AuthorId',"PaperId"], aggfunc = "count")).sort_index()
     dataset['pa_duplicate'] = pd.DataFrame(
-        pd.pivot_table(new_pa, values="Affiliation", index=['PaperId', "AuthorId"], aggfunc="count"))
+        pd.pivot_table(new_pa, values="Affiliation", index=['PaperId', "AuthorId"], aggfunc="count")).sort_index()
+
+    dataset['ap_indexed'] = new_pa.set_index(['AuthorId','PaperId']).sort_index()
 
     return dataset
 
@@ -80,12 +96,17 @@ def get_features(dataset, targetset):
     harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f5 = get_how_many_duplicated_coauthors_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
     harry_f6 = get_how_many_duplicated_papers_of_target_author_in_targetsets(dataset, author_paper_pairs)
+    thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
+
+    #harry_f7 = compare_author_name_from_profile(dataset, author_paper_pairs)
+    #harry_f8 = compare_author_affiliation_from_profile(dataset, author_paper_pairs)
 
     harry_list = [harry_f1, harry_f2] # Default features
 
-    thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
-    #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
-    harry_list += [harry_f3, harry_f4, thao_f1, harry_f5, harry_f6]
+
+    harry_list += [harry_f3, harry_f4, thao_f1, harry_f5, harry_f6] # 97.06% accuracy
+    #harry_list += [harry_f7, harry_f8]
     feature_list = harry_list
 
     '''
@@ -133,13 +154,13 @@ def main():
     print("Getting features for valid papers")
     features_valid = get_features(dataset, validset)
 
-    print("Getting features for test papers")
-    features_test = get_features(dataset, testset)
-
     pickle.dump(features_deleted, open(data_io.get_paths()["deleted_features"], 'wb'))
     pickle.dump(features_conf, open(data_io.get_paths()["confirmed_features"], 'wb'))
     pickle.dump(features_valid, open(data_io.get_paths()["valid_features"], 'wb'))
-    pickle.dump(features_test, open(data_io.get_paths()["test_features"], 'wb'))
+
+    #print("Getting features for test papers")
+    #features_test = get_features(dataset, testset)
+    #pickle.dump(features_test, open(data_io.get_paths()["test_features"], 'wb'))
 
 if __name__=="__main__":
     main()

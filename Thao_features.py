@@ -11,7 +11,6 @@ nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
-from sklearn.feature_extraction.text import
 stopword = set(stopwords.words('english'))
 porter = PorterStemmer()
 
@@ -107,7 +106,7 @@ def paper_keywords(data):
     for k in keywords:
         cnt2 += 1
         if (cnt2 % 100000 == 0):
-            print("Count: ", cnt)
+            print("Count: ", cnt2)
             print("Time: ", time.time() - start_time)
         keywordTokens.append(filter_keyword(k))
 
@@ -124,7 +123,11 @@ def paper_keywords(data):
     for i in paperid:
         paper_keyword[i] = paper.loc[i,'Key_token']
 
+
     pickle.dump(paper_keyword, open(data_io.get_paths()["paper_title_tokens"], 'wb'))
+
+    print ("Process done, time: ", time.time() - start_time)
+
     return paper_keyword
 
 
@@ -135,9 +138,6 @@ def paper_common_word(tokens, id1, id2):
     sim = 0
     word1 = paper_keyword[id1]
     word2 = paper_keyword[id2]
-
-
-def common_word(word1, word2):
     for i in word1:
         if i in word2:
             sim += 1
@@ -146,11 +146,8 @@ def common_word(word1, word2):
 def target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs):
     paper_sim = defaultdict(int)
     trainset = dataset['paper_author']
-
-
     trainset = trainset.set_index('AuthorId')
-
-    tokens = pickle.load(open(data_io.get_paths()["paper_title_tokens"], 'rb'))
+    tokens = dataset['tokens']
 
     for ap in author_paper_pairs:
         target_author_papers= list(trainset.loc[ap[0], "PaperId"])
