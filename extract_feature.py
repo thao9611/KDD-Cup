@@ -149,7 +149,7 @@ def get_ap_pair_from_aid(dataset, author_id):
         paper_ids.append(index)
 
     result = [(author_id, p) for p in paper_ids]
-    return result
+    return set(result)
 
 def get_features_from_aid(dataset, author_id):
     author_paper_pairs = get_ap_pair_from_aid(dataset, author_id)
@@ -198,6 +198,7 @@ def get_features_from_aid(dataset, author_id):
     #thao_list =[thao_f1, thao_f3,thao_f4]
     #feature_list = harry_list + kamil_list + thao_list
     '''
+
 
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list
