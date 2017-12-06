@@ -140,6 +140,68 @@ def get_features(dataset, targetset):
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list
 
+def get_ap_pair_from_aid(dataset, author_id):
+    ap_indexed = dataset['ap_indexed']
+    paper_rows = ap_indexed.loc[author_id]
+    #print(paper_rows)
+    paper_ids = []
+    for index, items in paper_rows.iterrows():
+        paper_ids.append(index)
+
+    result = [(author_id, p) for p in paper_ids]
+    return result
+
+def get_features_from_aid(dataset, author_id):
+    author_paper_pairs = get_ap_pair_from_aid(dataset, author_id)
+    harry_list = []
+    thao_list = []
+    kamil_list = []
+
+    # Keep the format of f# (dictionary): { (a1, p1): feature_value1, (a2, p2): feature_value2 ... }
+    # Add your features here and add them to feature_list!
+
+    harry_f1 = get_author_publishes_how_many_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f2 = get_paper_has_how_many_author_in_PaperAuthor(dataset, author_paper_pairs)
+
+    harry_list = [harry_f1, harry_f2]  # Default features
+
+    harry_f3 = get_author_publishes_on_how_many_papers_in_conference_of_target_paper_in_PaperAuthor(dataset,
+                                                                                                    author_paper_pairs)
+    harry_f4 = get_author_publishes_on_how_many_papers_in_journal_of_target_paper_in_PaperAuthor(dataset,
+                                                                                                 author_paper_pairs)
+    harry_f5 = get_how_many_duplicated_coauthors_of_target_paper_in_PaperAuthor(dataset, author_paper_pairs)
+    harry_f6 = get_how_many_duplicated_papers_of_target_author_in_targetsets(dataset, author_paper_pairs)
+    thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    # thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset, author_paper_pairs)
+    harry_list += [harry_f3, harry_f4, thao_f1, harry_f5, harry_f6]  # 97.06% accuracy
+
+    harry_f7 = compare_author_name_from_profile(dataset, author_paper_pairs)
+    harry_f8 = compare_author_affiliation_from_profile(dataset, author_paper_pairs)
+    harry_list += [harry_f7, harry_f8]
+    feature_list = harry_list
+
+    '''
+    start_time = time.time()
+    print(start_time)
+    kamil_f1 = kamil_feature_11(dataset, author_paper_pairs)
+    print(time.time() - start_time)
+
+    kamil_list = [kamil_f1]
+    feature_list = kamil_list + harry_list
+
+    #thao_f1 = author_paper_frequency_count(dataset, author_paper_pairs)
+    #thao_f2 = author_paper_affiliation(dataset, author_paper_pairs)
+    #thao_f3 = target_paper_and_papers_of_target_author_by_keywords(dataset,author_paper_pairs)
+
+    #thao_f4 = target_paper_and_papers_of_target_author_by_years(dataset, author_paper_pairs)
+
+    #thao_list =[thao_f1, thao_f3,thao_f4]
+    #feature_list = harry_list + kamil_list + thao_list
+    '''
+
+    result_list = generate_feature_list(author_paper_pairs, feature_list)
+    return result_list
+
 def main():
     print("Reading csv files")
     dataset = read_all_DS()
