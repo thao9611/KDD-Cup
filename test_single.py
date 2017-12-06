@@ -57,20 +57,37 @@ for index, row in paper_author.iterrows():
         print (aid, name)
 '''
 
+validset = pd.read_csv('dataRev2/Valid.csv')
+for index, row in validset.iterrows():
+    aid = row['AuthorId']
+    name = author_indexed.loc[aid]["Name"].lower()
+    if ("kim" in name):
+        print (aid, name)
+
+
+
 print ("Indexing ends %s" % (time.time() - start_time))
 print("Give author id")
-aid = int(input())
-while (aid not in author_indexed.index):
-    print("Author id not exists, give author id agian")
+while(True):
     aid = int(input())
+    if (aid == 0):
+        break;
+    while (aid not in author_indexed.index):
+        print("Author id not exists, give author id agian")
+        aid = int(input())
+    print(author_indexed.loc[aid]["Name"])
+    print(author_indexed.loc[aid]["Affiliation"])
 
-#TODO case where aid or pid doens't belong to author, paper
-print(author_indexed.loc[aid]["Name"])
-print(author_indexed.loc[aid]["Affiliation"])
+
+#print(author_indexed.loc[aid]["Name"])
+#print(author_indexed.loc[aid]["Affiliation"])
 
 print("Give paper id")
-pid = int(input())
-while (aid not in author_indexed.index):
-    print("Paper id not exists, give paper id agian")
+while(True):
     pid = int(input())
-print(paper_indexed.loc[pid]["Title"])
+    if (pid == 0):
+        break
+    while (pid not in paper_indexed.index):
+        print("Paper id not exists, give paper id agian")
+        pid = int(input())
+    print(paper_indexed.loc[pid]["Title"])
