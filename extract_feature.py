@@ -203,6 +203,27 @@ def get_features_from_aid(dataset, author_id):
     result_list = generate_feature_list(author_paper_pairs, feature_list)
     return result_list
 
+def predict_feature_from_aid(data):
+    author_paper_ids = [x[:2] for x in data]
+    features = [x[2:] for x in data]
+
+    print("Loading the classifier")
+    classifier = data_io.load_model()
+
+    print("Making predictions\n")
+
+    features = np.array(features)  # This line is for xgboost
+    predictions = classifier.predict_proba(features)[:, 1]
+    predictions = list(predictions)
+
+    result = []
+    for (a_id, p_id), pred in zip(author_paper_ids, predictions):
+        result.append((pred, p_id))
+    #print(author_predictions)
+    paper_ids_sorted = sorted(result, reverse=True)
+    result = paper_ids_sorted[0:25]
+    return result
+
 def main():
     print("Reading csv files")
     dataset = read_all_DS()
@@ -231,11 +252,9 @@ def main():
     pickle.dump(features_conf, open(data_io.get_paths()["confirmed_features"], 'wb'))
     pickle.dump(features_valid, open(data_io.get_paths()["valid_features"], 'wb'))
 
-    '''
     print("Getting features for test papers")
     features_test = get_features(dataset, testset)
     pickle.dump(features_test, open(data_io.get_paths()["test_features"], 'wb'))
-    '''
 
 if __name__=="__main__":
     main()
